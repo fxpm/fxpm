@@ -21,56 +21,38 @@
 package commands
 
 import (
-	"encoding/json"
 	"fmt"
 
-	"github.com/fxpm/fxpm/util"
-
-	"github.com/fxpm/fxpm/logs"
-
-	"gopkg.in/yaml.v2"
-
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
-var outputType string = "yaml"
+var name string
+var port string
 
-// configDumpCmd represents the configDump command
-var configDumpCmd = &cobra.Command{
-	Use:   "dump",
-	Short: "Dump the current status of the configuration file.",
-	Long: `Dump the current status of the configuration file.
+// serversCreateCmd represents the serversCreate command
+var serversCreateCmd = &cobra.Command{
+	Use:   "create <dir>",
+	Short: "Create an FX Server instance locally with FXPM",
+	Long: `A longer description that spans multiple lines and likely contains examples
+and usage of using your command. For example:
 
-The running configuration will be pullsed from the current
-running configuration. Specifying an alternate configuration
-file will result in teh alternate configuration being dumped.`,
-	PreRun:  logs.CommandStarting,
-	PostRun: logs.CommandEnded,
-	Aliases: []string{"d"},
+Cobra is a CLI library for Go that empowers applications.
+This application is a tool to generate the needed files
+to quickly create a Cobra application.`,
+	Aliases: []string{"c", "add", "a"},
 	Run: func(cmd *cobra.Command, args []string) {
-		var types = []string{"yaml", "json"}
-		var dump interface{}
-		viper.Unmarshal(&dump)
-
-		if !util.SliceContainsString(types, outputType) {
-			fmt.Println("Invalid output specified. Showing yaml.")
-		}
-
-		var output []byte
-		if outputType == "json" {
-			output, _ = json.MarshalIndent(dump, "", "  ")
-		} else {
-			output, _ = yaml.Marshal(dump)
-		}
-
-		fmt.Printf("%s \n", output)
+		fmt.Println("serversCreate called")
 	},
 }
 
 func init() {
-	configCmd.AddCommand(configDumpCmd)
+	serversCmd.AddCommand(serversCreateCmd)
 
-	// Register the --out, -o flags for defining output type
-	configDumpCmd.Flags().StringVarP(&outputType, "output", "o", "yaml", "defines the output type: yaml or json")
+	// Specify the name of the FXPM server through flags, rather than through
+	// the wizard
+	serversCreateCmd.Flags().StringVarP(&name, "name", "n", "", "Specify a name for the server instance")
+
+	// Specify a specific port to use for the FXPM server through flags, rather
+	// than through the wizard
+	serversCreateCmd.Flags().StringVarP(&port, "port", "p", "", "Sepcify a specific port to listen on")
 }

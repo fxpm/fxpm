@@ -22,36 +22,59 @@ package commands
 
 import (
 	"fmt"
+	"os"
 
+	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
-// configCmd represents the config command
-var configCmd = &cobra.Command{
-	Use:   "config",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	Aliases: []string{"c"},
+// contextsCmd represents the contexts command
+var contextsCmd = &cobra.Command{
+	Use:   "contexts",
+	Short: "Manage connectivity contexts within FXPM",
+	Long: `The contexts command group offers the ability to setup
+configuration items on a per-context basis, such as the Docker environment,
+secrets, and keys.`,
+	Aliases: []string{"ctx", "ct", "context"},
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("config called")
+		ctxMap := viper.GetStringMapString("contexts")
+
+		var ctxArr [][]string
+		for k, val := range ctxMap {
+			var key = k
+
+			if key == viper.GetString("context") {
+				key = "* " + k
+			} else {
+				key = "  " + k
+			}
+
+			ctxArr = append(ctxArr, []string{key, val, "fxpm context use " + k})
+		}
+
+		table := tablewriter.NewWriter(os.Stdout)
+		table.SetHeader([]string{"Key", "Path", "Command"})
+		table.AppendBulk(ctxArr)
+		table.SetCaption(true, "The currently active context is marked with an asterisk.")
+		table.SetBorder(false)
+
+		fmt.Println()
+		table.Render()
+		fmt.Println()
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(configCmd)
+	rootCmd.AddCommand(contextsCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// configCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// contextsCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// configCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// contextsCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

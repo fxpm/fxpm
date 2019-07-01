@@ -13,7 +13,7 @@ func GetRootPath(dirs ...string) string {
 	root, _ := homedir.Expand("~/.fxpm")
 
 	if len(dirs) > 0 {
-		return filepath.Join(root, strings.Join(dirs, strconv.QuoteRune(filepath.Separator)))
+		return filepath.Join(root, strings.Join(dirs, string(filepath.Separator)))
 	}
 
 	return root
@@ -24,7 +24,7 @@ func GetLogsPath(dirs ...string) string {
 	logs, _ := homedir.Expand("~/.fxpm/logs")
 
 	if len(dirs) > 0 {
-		return filepath.Join(logs, strings.Join(dirs, strconv.QuoteRune(filepath.Separator)))
+		return filepath.Join(logs, strings.Join(dirs, string(filepath.Separator)))
 	}
 
 	return logs

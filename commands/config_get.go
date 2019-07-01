@@ -38,7 +38,8 @@ For example:
 config get fxpm.production
 config get fxpm.debug
 `,
-	Args: cobra.ExactArgs(1),
+	Args:    cobra.ExactArgs(1),
+	Aliases: []string{"g"},
 	Run: func(cmd *cobra.Command, args []string) {
 		var key string = args[0]
 		if json, err := json.MarshalIndent(viper.Get(key), "", " "); err == nil {

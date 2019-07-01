@@ -21,56 +21,49 @@
 package commands
 
 import (
-	"encoding/json"
 	"fmt"
-
-	"github.com/fxpm/fxpm/util"
-
-	"github.com/fxpm/fxpm/logs"
-
-	"gopkg.in/yaml.v2"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-var outputType string = "yaml"
+// contextsUseCmd represents the contextsUse command
+var contextsUseCmd = &cobra.Command{
+	Use:   "use <key>",
+	Short: "Set a context as the default context.",
+	Long: `A longer description that spans multiple lines and likely contains examples
+and usage of using your command. For example:
 
-// configDumpCmd represents the configDump command
-var configDumpCmd = &cobra.Command{
-	Use:   "dump",
-	Short: "Dump the current status of the configuration file.",
-	Long: `Dump the current status of the configuration file.
-
-The running configuration will be pullsed from the current
-running configuration. Specifying an alternate configuration
-file will result in teh alternate configuration being dumped.`,
-	PreRun:  logs.CommandStarting,
-	PostRun: logs.CommandEnded,
-	Aliases: []string{"d"},
+Cobra is a CLI library for Go that empowers applications.
+This application is a tool to generate the needed files
+to quickly create a Cobra application.`,
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		var types = []string{"yaml", "json"}
-		var dump interface{}
-		viper.Unmarshal(&dump)
+		findContext := viper.GetString("contexts." + args[0])
 
-		if !util.SliceContainsString(types, outputType) {
-			fmt.Println("Invalid output specified. Showing yaml.")
+		if findContext == "" {
+			fmt.Println("The context selected does not exist. Keeping current value.")
+
+			return
 		}
 
-		var output []byte
-		if outputType == "json" {
-			output, _ = json.MarshalIndent(dump, "", "  ")
-		} else {
-			output, _ = yaml.Marshal(dump)
-		}
+		viper.Set("context", args[0])
+		viper.WriteConfig()
 
-		fmt.Printf("%s \n", output)
+		fmt.Printf("The context has been changed. You are now using the `%s` context. \n", args[0])
 	},
 }
 
 func init() {
-	configCmd.AddCommand(configDumpCmd)
+	contextsCmd.AddCommand(contextsUseCmd)
 
-	// Register the --out, -o flags for defining output type
-	configDumpCmd.Flags().StringVarP(&outputType, "output", "o", "yaml", "defines the output type: yaml or json")
+	// Here you will define your flags and configuration settings.
+
+	// Cobra supports Persistent Flags which will work for this command
+	// and all subcommands, e.g.:
+	// contextsUseCmd.PersistentFlags().String("foo", "", "A help for foo")
+
+	// Cobra supports local flags which will only run when this command
+	// is called directly, e.g.:
+	// contextsUseCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

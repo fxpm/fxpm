@@ -21,56 +21,32 @@
 package commands
 
 import (
-	"encoding/json"
-	"fmt"
-
-	"github.com/fxpm/fxpm/util"
-
 	"github.com/fxpm/fxpm/logs"
-
-	"gopkg.in/yaml.v2"
-
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
-var outputType string = "yaml"
-
-// configDumpCmd represents the configDump command
-var configDumpCmd = &cobra.Command{
-	Use:   "dump",
-	Short: "Dump the current status of the configuration file.",
-	Long: `Dump the current status of the configuration file.
-
-The running configuration will be pullsed from the current
-running configuration. Specifying an alternate configuration
-file will result in teh alternate configuration being dumped.`,
+// serversCmd represents the servers command
+var serversCmd = &cobra.Command{
+	Use:   "servers",
+	Short: "Manage FX Server instances powered by Docker locally.",
+	Long: `Configure local FX Server instances powered by Docker, managed
+through the FXPM CLI in an expressive syntax designed to empower you to
+spend less time managing your server.`,
+	Aliases: []string{"server", "s"},
 	PreRun:  logs.CommandStarting,
 	PostRun: logs.CommandEnded,
-	Aliases: []string{"d"},
-	Run: func(cmd *cobra.Command, args []string) {
-		var types = []string{"yaml", "json"}
-		var dump interface{}
-		viper.Unmarshal(&dump)
-
-		if !util.SliceContainsString(types, outputType) {
-			fmt.Println("Invalid output specified. Showing yaml.")
-		}
-
-		var output []byte
-		if outputType == "json" {
-			output, _ = json.MarshalIndent(dump, "", "  ")
-		} else {
-			output, _ = yaml.Marshal(dump)
-		}
-
-		fmt.Printf("%s \n", output)
-	},
 }
 
 func init() {
-	configCmd.AddCommand(configDumpCmd)
+	rootCmd.AddCommand(serversCmd)
 
-	// Register the --out, -o flags for defining output type
-	configDumpCmd.Flags().StringVarP(&outputType, "output", "o", "yaml", "defines the output type: yaml or json")
+	// Here you will define your flags and configuration settings.
+
+	// Cobra supports Persistent Flags which will work for this command
+	// and all subcommands, e.g.:
+	// serversCmd.PersistentFlags().String("foo", "", "A help for foo")
+
+	// Cobra supports local flags which will only run when this command
+	// is called directly, e.g.:
+	// serversCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

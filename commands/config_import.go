@@ -46,7 +46,8 @@ json format to import the file and overwrite the existing
 configuration. Specifying an alternative configuration will
 overwrite the alternative configuration instead of the global
 configuration.`,
-	Args: cobra.ExactArgs(1),
+	Args:    cobra.ExactArgs(1),
+	Aliases: []string{"i"},
 	Run: func(cmd *cobra.Command, args []string) {
 		var possibleTypes []string = []string{".json", ".yaml", ".yml"}
 		path, _ := homedir.Expand(args[0])

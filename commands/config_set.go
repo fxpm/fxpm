@@ -40,6 +40,7 @@ to quickly create a Cobra application.`,
 	PreRun:  logs.CommandStarting,
 	PostRun: logs.CommandEnded,
 	Args:    cobra.RangeArgs(1, 2),
+	Aliases: []string{"s"},
 	Run: func(cmd *cobra.Command, args []string) {
 		var key string = args[0]
 		if len(args) != 2 && !FlagForced {

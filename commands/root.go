@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/fxpm/fxpm/contexts"
 	"github.com/fxpm/fxpm/logs"
 	"github.com/fxpm/fxpm/util"
 
@@ -75,7 +76,7 @@ func init() {
 
 	// Force debug logging to happen for more information that developers
 	// might care about.
-	rootCmd.PersistentFlags().BoolVarP(&FlagDebug, "debug", "d", false, "force debugging output")
+	rootCmd.PersistentFlags().BoolVarP(&FlagDebug, "debug", "x", false, "force debugging output")
 
 	// Specify a non-default configuration path, this is passed in to
 	// viper in order for it to understand where to load the file.
@@ -91,6 +92,8 @@ func initConfig() {
 
 	viper.SetDefault("fxpm.templates.skipLocal", false)
 	viper.SetDefault("fxpm.templates.localPath", util.GetTemplatesPath())
+
+	viper.SetDefault("context", "default")
 
 	viper.Set("fxpm.verbose", FlagVerbose)
 	viper.Set("fxpm.debug", FlagDebug)
@@ -136,6 +139,8 @@ func initConfig() {
 
 	viper.AutomaticEnv() // read in environment variables that match
 	viper.SafeWriteConfig()
+
+	contexts.Setup()
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err != nil {
